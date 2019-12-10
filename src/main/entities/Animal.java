@@ -1,0 +1,90 @@
+package entities;
+
+import maps.FoldableMap;
+import utilities.Vector2d;
+import utilities.direction8Way;
+import utilities.genes32;
+
+public class Animal {
+
+    public int energy;
+    public final int maxEnergy;
+
+    public direction8Way orientation;
+    public Vector2d position;
+    public genes32 genes;
+
+    private FoldableMap map;
+
+    public Animal(FoldableMap map, int startEnergy){
+        this.map = map;
+        this.orientation = new direction8Way();
+        this.energy = startEnergy;
+        this.maxEnergy = startEnergy;
+
+        this.genes = new genes32();
+
+        Vector2d tempPosition = new Vector2d((int)(map.width * Math.random()), (int)(map.height * Math.random()));
+        while( !map.animalsAt(tempPosition).isEmpty() || map.animalsAt(tempPosition) == null ){
+            tempPosition = new Vector2d((int)(map.width * Math.random()), (int)(map.height * Math.random()));
+        }
+        this.position = tempPosition;
+
+        this.map.placeAnimal(this);
+    }
+
+    public Animal(FoldableMap map, int startEnergy, int currentEnergy, Vector2d position, genes32 genes){
+        this(map, startEnergy);
+        this.energy = currentEnergy;
+        this.position = position;
+        this.genes = genes;
+    }
+
+    public String toString(){
+        return orientation.toString();
+    }
+
+    public void move(direction8Way direction){
+        map.removeAnimal(this);
+        this.position.add(direction.toUnitVector());
+        map.placeAnimal(this);
+    }
+
+    public boolean makeBaby(Animal mateFriend){
+        if( this.energy < 0.5*this.maxEnergy || mateFriend.energy < 0.5*mateFriend.maxEnergy ) return false;
+
+        // look for a place to place animal////////
+        direction8Way tempDirection = new direction8Way();
+        int iterationsCounter = 0;
+        while( map.animalsAt( this.position.add( tempDirection.toUnitVector() ) ) != null ){
+            tempDirection.turn(1);
+            iterationsCounter++;
+            if(iterationsCounter > 8) return false;
+        }
+        Vector2d kidPosition = this.position.add( tempDirection.toUnitVector() );
+        ///////////////////////////////////////////
+
+        // create new genes for a kid
+        int secondPart = 1 + (int) Math.floor( 30*Math.random() );         // should be [1,2,...,29,30] as to make thirdPart at least of length 1       // secondPart i thirdPart są indeksem pierwszego miejsca w nowej części
+        int thirdPart = secondPart + 1 + (int) Math.floor( (32-secondPart)*Math.random() );
+
+        genes32 kidGenes = new genes32();
+        kidGenes.addGenesParts(this.genes.getGenesBetween(0,secondPart-1), mateFriend.genes.getGenesBetween(secondPart, thirdPart-1), this.genes.getGenesBetween(thirdPart, 31));
+
+
+
+
+
+
+
+
+        Animal dumbKid = new Animal(this.map, this.maxEnergy, (this.energy+mateFriend.energy)/4, kidPosition, kidGenes);
+        this.energy = 3 * this.energy/4;
+        mateFriend.energy = 3 * mateFriend.energy / 4;
+        return true;
+    }
+
+
+
+}
+
