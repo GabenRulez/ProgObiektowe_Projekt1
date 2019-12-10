@@ -78,6 +78,7 @@ public class Animal {
 
         genes32 kidGenes = new genes32();
         kidGenes.addGenesParts(this.genes.getGenesBetween( 0, secondPart-1 ), mateFriend.genes.getGenesBetween( secondPart, thirdPart-1 ), this.genes.getGenesBetween( thirdPart, 31 ));
+        kidGenes.repairGenes();
         ///////////////////////////////////////////
 
         Animal dumbKid = new Animal(this.map, this.initialEnergy, (this.energy+mateFriend.energy)/4, kidPosition, kidGenes);
@@ -86,6 +87,10 @@ public class Animal {
         this.map.placeAnimal(dumbKid);
 
         return true;
+    }
+
+    public void updateEnergy(int difference){
+        this.energy += difference;
     }
 
 

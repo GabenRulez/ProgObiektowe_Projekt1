@@ -1,5 +1,7 @@
 package utilities;
 
+import java.util.ArrayList;
+
 public class genes32 {
     public int[] array;
 
@@ -70,6 +72,36 @@ public class genes32 {
             }
         }
         return -1;
+    }
+
+    public void repairGenes(){
+        ArrayList<Integer> missingIndexes = new ArrayList<>();
+        ArrayList<Integer> extraIndexes = new ArrayList<>();
+
+        boolean needForRepair = false;
+        for (int i=0; i<8; i++){
+            if (this.array[i] < 1) {
+                needForRepair = true;
+                missingIndexes.add(i);
+            }
+        }
+        if(!needForRepair) return;
+
+        for(int i=0; i<8; i++){
+            if(this.array[i]>1){
+                for(int j=1; j<this.array[i]; j++){
+                    extraIndexes.add(i);
+                }
+            }
+        }
+        // Here I have missingIndexes containg all indexes that are missing, and I can choose any value to insert them from extraIndexes list.
+
+        for (Integer missingIndex : missingIndexes) {
+            int valueToExchange = extraIndexes.remove((int) Math.floor(extraIndexes.size() * Math.random()));
+            this.array[missingIndex] += 1;
+            this.array[valueToExchange] -= 1;
+        }
+        // All indexes should have value of at least 1
     }
 
 
