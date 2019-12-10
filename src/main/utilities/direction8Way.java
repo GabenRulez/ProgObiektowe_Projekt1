@@ -33,6 +33,5 @@ public class direction8Way {
             case 7: return new Vector2d(-1,1);
             default: throw new IllegalArgumentException(this.value + " is not a proper direction. Error in 'direction.java'");
         }
-
     }
 }

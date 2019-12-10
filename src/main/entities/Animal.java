@@ -8,7 +8,7 @@ import utilities.genes32;
 public class Animal {
 
     public int energy;
-    public final int maxEnergy;
+    public final int initialEnergy;
 
     public direction8Way orientation;
     public Vector2d position;
@@ -20,7 +20,7 @@ public class Animal {
         this.map = map;
         this.orientation = new direction8Way();
         this.energy = startEnergy;
-        this.maxEnergy = startEnergy;
+        this.initialEnergy = startEnergy;
 
         this.genes = new genes32();
 
@@ -44,14 +44,22 @@ public class Animal {
         return orientation.toString();
     }
 
-    public void move(direction8Way direction){
+    public void move(){
         map.removeAnimal(this);
-        this.position.add(direction.toUnitVector());
+        this.turnRandom();
+        this.position.add( this.orientation.toUnitVector() );
+
+        // TODO check whether animal is inside normal scope of the map, if not - translate by width, or height
+
         map.placeAnimal(this);
     }
 
+    private void turnRandom(){
+        this.orientation.turn( this.genes.geneIndex( (int) Math.floor( 32 * Math.random() ) ) );
+    }
+
     public boolean makeBaby(Animal mateFriend){
-        if( this.energy < 0.5*this.maxEnergy || mateFriend.energy < 0.5*mateFriend.maxEnergy ) return false;
+        if( this.energy < 0.5*this.initialEnergy || mateFriend.energy < 0.5*mateFriend.initialEnergy) return false;
 
         // look for a place to place animal////////
         direction8Way tempDirection = new direction8Way();
@@ -64,23 +72,19 @@ public class Animal {
         Vector2d kidPosition = this.position.add( tempDirection.toUnitVector() );
         ///////////////////////////////////////////
 
-        // create new genes for a kid
+        // create new genes for a kid//////////////
         int secondPart = 1 + (int) Math.floor( 30*Math.random() );         // should be [1,2,...,29,30] as to make thirdPart at least of length 1       // secondPart i thirdPart są indeksem pierwszego miejsca w nowej części
         int thirdPart = secondPart + 1 + (int) Math.floor( (32-secondPart)*Math.random() );
 
         genes32 kidGenes = new genes32();
-        kidGenes.addGenesParts(this.genes.getGenesBetween(0,secondPart-1), mateFriend.genes.getGenesBetween(secondPart, thirdPart-1), this.genes.getGenesBetween(thirdPart, 31));
+        kidGenes.addGenesParts(this.genes.getGenesBetween( 0, secondPart-1 ), mateFriend.genes.getGenesBetween( secondPart, thirdPart-1 ), this.genes.getGenesBetween( thirdPart, 31 ));
+        ///////////////////////////////////////////
 
-
-
-
-
-
-
-
-        Animal dumbKid = new Animal(this.map, this.maxEnergy, (this.energy+mateFriend.energy)/4, kidPosition, kidGenes);
+        Animal dumbKid = new Animal(this.map, this.initialEnergy, (this.energy+mateFriend.energy)/4, kidPosition, kidGenes);
         this.energy = 3 * this.energy/4;
         mateFriend.energy = 3 * mateFriend.energy / 4;
+        this.map.placeAnimal(dumbKid);
+
         return true;
     }
 

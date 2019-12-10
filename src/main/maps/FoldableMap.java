@@ -12,6 +12,9 @@ public class FoldableMap {
     public final int width;
     public final int height;
 
+    public final Vector2d jumpAcrossWidth;
+    public final Vector2d jumpAcrossHeight;
+
         // na dole przechowywanie zarówno zwierząt jak i roślin
     //komparator powinien: ustawiac w kolejności: najpierw roślina, potem najsilniejsze (pod względem energii) zwierze, ... , najsłabsze zwierze
     private HashMap<Vector2d, TreeSet<Animal>> animalsMap = new HashMap<>();
@@ -23,6 +26,9 @@ public class FoldableMap {
     public FoldableMap(int width, int height, float jungleRatio){
         this.width = width;
         this.height = height;
+
+        this.jumpAcrossWidth = new Vector2d(width, 0);
+        this.jumpAcrossHeight = new Vector2d(0, height);
 
         double jungleRatio1D = Math.sqrt(jungleRatio);
         int jungleWidth =   (int) Math.floor( this.width    * jungleRatio1D );

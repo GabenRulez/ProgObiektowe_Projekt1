@@ -4,23 +4,18 @@ public class genes32 {
     public int[] array;
 
     public genes32(){
-        this.array = new int[]{4,4,4,4,4,4,4,4};
+        this.array = new int[]{1,1,1,1,1,1,1,1};
+        for(int i=0; i<24; i++){
+            int value = (int) Math.floor(8 * Math.random());
+            this.array[value]++;
+        }
     }
 
     public genes32( genes32 copy ){
         System.arraycopy(copy.array, 0, this.array, 0, 8);
     }
 
-
-    /*
-    public genes32 copy(){
-
-        return new int[]{this.array[0], this.array[1], this.array[2], this.array[3], this.array[4], this.array[5], this.array[6], this.array[7]};
-    }
-
-     */
-
-    public genes32 getGenesBetween(int start, int end){
+    public genes32 getGenesBetween(int start, int end){         // resulting array includes both "start index" and "end index" element
         genes32 genesPart = new genes32( this );
 
         int startCol = 0;
@@ -61,6 +56,20 @@ public class genes32 {
         }
 
         return finalGenes;
+    }
+
+    public int geneIndex(int index){
+        int startCol = 0;
+        while( index != 0 ){
+            if(this.array[startCol] <= index ){
+                index -= this.array[startCol];
+                startCol++;
+            }
+            else{
+                return startCol;
+            }
+        }
+        return -1;
     }
 
 
