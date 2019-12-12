@@ -79,7 +79,8 @@ public class FoldableMap {
     }
 
     public void simulateNextDay(int energyPerDay){
-        for(TreeSet<Animal> currentTreeSet :animalsMap.values()){
+
+        for(TreeSet<Animal> currentTreeSet : animalsMap.values()){
             Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
             while(iteratorPoTreeSet.hasNext()){
                 Animal currentAnimal = iteratorPoTreeSet.next();
@@ -94,13 +95,57 @@ public class FoldableMap {
             }
         }
 
+
+
         for(Vector2d positionTreeSet :animalsMap.keySet()){
-            if(plantsAt(positionTreeSet) != null){
-                break; // TODO tutaj wybierz wszystkie zwierzęta które mają najwięcej energii na tej pozycji i rozdziel pomiędzy nie jedzenie
+
+            if(plantsAt(positionTreeSet) != null){  // if plant exist at that position
+                int maxEnergy = animalsMap.get(positionTreeSet).first().energy;         // set maxEnergy size
+
+                ArrayList<Animal> animalsThatEat = new ArrayList<>();                   // create a List of maxEnergy Animals (to get amount of them + easier to iterate)
+                for(Animal currentAnimal : animalsMap.get(positionTreeSet)){
+                    if(currentAnimal.energy != maxEnergy) break;
+                    animalsThatEat.add(currentAnimal);
+                }
+                for(Animal currentAnimal : animalsThatEat){
+                    currentAnimal.updateEnergy(plantsAt(positionTreeSet).energy / animalsThatEat.size());       // give all animals with most energy their part of food
+                }
+            }
+
+            if(animalsMap.get(positionTreeSet).size() >= 2){                // Making babies
+                TreeSet<Animal> currentTreeSet = animalsMap.get(positionTreeSet);
+
+                Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
+                Animal firstAnimal = iteratorPoTreeSet.next();
+                Animal secondAnimal = iteratorPoTreeSet.next();
+
+                if( firstAnimal.energy > secondAnimal.energy ){
+                    firstAnimal.makeBaby(secondAnimal);
+                }
+                else{
+                    int maxEnergy = firstAnimal.energy;
+
+                    ArrayList<Animal> animalsThatMakeBabies = new ArrayList<>();
+                    for(Animal currentAnimal : currentTreeSet){
+                        if( currentAnimal.energy < maxEnergy ) break;
+                        animalsThatMakeBabies.add(currentAnimal);
+                    }
+
+                    int randomNumber1 = (int) Math.floor(animalsThatMakeBabies.size() * Math.random());
+                    int randomNumber2 = (int) Math.floor(animalsThatMakeBabies.size() * Math.random());
+                    while( randomNumber1 == randomNumber2 ) randomNumber2 = (int) Math.floor(animalsThatMakeBabies.size() * Math.random());
+
+                    animalsThatMakeBabies.get(randomNumber1).makeBaby( animalsThatMakeBabies.get(randomNumber2) );
+                }
             }
         }
 
+        //// Now create new plants
+        // TODO Lista która jest aktualizowana miejsc na ktorych mozemy postawic roślinkę (tj. miejsc w ktorych nie ma roślinki, ani nie stoi na niej żadne zwierze)
+
+
+
+
+
     }
-
-
 }
