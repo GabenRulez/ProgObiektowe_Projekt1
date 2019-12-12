@@ -69,5 +69,4 @@ public class Vector2d {
         hash += this.y * 17;
         return hash;
     }
-
 }

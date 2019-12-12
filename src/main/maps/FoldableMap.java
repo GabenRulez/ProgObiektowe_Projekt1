@@ -3,8 +3,11 @@ package maps;
 import entities.Animal;
 import entities.Plant;
 import utilities.Vector2d;
+import utilities.energyComparator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 public class FoldableMap {
@@ -15,13 +18,12 @@ public class FoldableMap {
     public final Vector2d jumpAcrossWidth;
     public final Vector2d jumpAcrossHeight;
 
-        // na dole przechowywanie zarówno zwierząt jak i roślin
-    //komparator powinien: ustawiac w kolejności: najpierw roślina, potem najsilniejsze (pod względem energii) zwierze, ... , najsłabsze zwierze
+    //komparator powinien: ustawiac w kolejności: najsilniejsze (pod względem energii) zwierze, ... , najsłabsze zwierze
     private HashMap<Vector2d, TreeSet<Animal>> animalsMap = new HashMap<>();
     private HashMap<Vector2d, Plant> plantsMap = new HashMap<>();
 
-    private Vector2d jungleUpperLeft;
-    private Vector2d jungleLowerRight;
+    private Vector2d jungleLowerLeft;
+    private Vector2d jungleUpperRight;
 
     public FoldableMap(int width, int height, float jungleRatio){
         this.width = width;
@@ -34,9 +36,8 @@ public class FoldableMap {
         int jungleWidth =   (int) Math.floor( this.width    * jungleRatio1D );
         int jungleHeight =  (int) Math.floor( this.height   * jungleRatio1D );
 
-        jungleUpperLeft = new Vector2d((this.width - jungleWidth) / 2, (this.height - jungleHeight)/2 );
-        jungleLowerRight = jungleUpperLeft.add( new Vector2d(jungleWidth, jungleHeight) );
-
+        jungleLowerLeft = new Vector2d((this.width - jungleWidth) / 2, (this.height - jungleHeight)/2 );
+        jungleUpperRight = jungleLowerLeft.add( new Vector2d(jungleWidth, jungleHeight) );
     }
 
 
@@ -46,7 +47,7 @@ public class FoldableMap {
 
     public void placeAnimal(Animal animal){
         if ( animalsMap.get(animal.position) == null ){
-            TreeSet<Animal> listOfAnimalsAtPosition = new TreeSet<>();
+            TreeSet<Animal> listOfAnimalsAtPosition = new TreeSet<>(new energyComparator());
             listOfAnimalsAtPosition.add(animal);
             animalsMap.put(animal.position, listOfAnimalsAtPosition);
         }
@@ -77,6 +78,29 @@ public class FoldableMap {
         plantsMap.remove( plant.position );
     }
 
+    public void simulateNextDay(int energyPerDay){
+        for(TreeSet<Animal> currentTreeSet :animalsMap.values()){
+            Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
+            while(iteratorPoTreeSet.hasNext()){
+                Animal currentAnimal = iteratorPoTreeSet.next();
+
+                if(currentAnimal.energy <= 0){      // Usunięcie martwych zwierząt z mapy
+                    System.out.println("An animal has died at " + currentAnimal.position);
+                    this.removeAnimal(currentAnimal);
+                }
+
+                currentAnimal.updateEnergy(-energyPerDay);
+                currentAnimal.move();               // Zmiana kierunku zaimplementowana w poruszaniu się
+            }
+        }
+
+        for(Vector2d positionTreeSet :animalsMap.keySet()){
+            if(plantsAt(positionTreeSet) != null){
+                break; // TODO tutaj wybierz wszystkie zwierzęta które mają najwięcej energii na tej pozycji i rozdziel pomiędzy nie jedzenie
+            }
+        }
+
+    }
 
 
 }

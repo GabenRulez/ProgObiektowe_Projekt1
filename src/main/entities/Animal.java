@@ -49,7 +49,11 @@ public class Animal {
         this.turnRandom();
         this.position.add( this.orientation.toUnitVector() );
 
-        // TODO check whether animal is inside normal scope of the map, if not - translate by width, or height
+            if(this.position.x >= this.map.width) this.position = this.position.subtract(this.map.jumpAcrossWidth);
+            else if(this.position.x < 0) this.position = this.position.add(this.map.jumpAcrossWidth);
+
+            if(this.position.y >= this.map.height) this.position = this.position.subtract(this.map.jumpAcrossWidth);
+            else if(this.position.y < 0) this.position = this.position.add(this.map.jumpAcrossHeight);
 
         map.placeAnimal(this);
     }
