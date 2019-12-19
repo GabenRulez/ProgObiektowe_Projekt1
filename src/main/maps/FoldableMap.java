@@ -19,21 +19,22 @@ public class FoldableMap {
     public final Vector2d jumpAcrossHeight;
 
     //komparator powinien: ustawiac w kolejności: najsilniejsze (pod względem energii) zwierze, ... , najsłabsze zwierze
-    private HashMap<Vector2d, TreeSet<Animal>> animalsMap = new HashMap<>();
-    private HashMap<Vector2d, Plant> plantsMap = new HashMap<>();
+    public HashMap<Vector2d, TreeSet<Animal>> animalsMap = new HashMap<>();
+    public HashMap<Vector2d, Plant> plantsMap = new HashMap<>();
 
-    private HashMap<Vector2d, Boolean> placesForPlantsJungle;
-    private HashMap<Vector2d, Boolean> placesForPlantsOutside;
+    public HashMap<Vector2d, Boolean> placesForPlantsJungle;
+    public HashMap<Vector2d, Boolean> placesForPlantsOutside;
 
-    private int plantEnergy = 15;
+    private int plantEnergy;
 
 
     private Vector2d jungleLowerLeft;
     private Vector2d jungleUpperRight;
 
-    public FoldableMap(int width, int height, float jungleRatio){
+    public FoldableMap(int width, int height, int plantEnergy, float jungleRatio){
         this.width = width;
         this.height = height;
+        this.plantEnergy = plantEnergy;
 
         this.jumpAcrossWidth = new Vector2d(width, 0);
         this.jumpAcrossHeight = new Vector2d(0, height);
@@ -44,6 +45,9 @@ public class FoldableMap {
 
         jungleLowerLeft = new Vector2d((this.width - jungleWidth) / 2, (this.height - jungleHeight)/2 );
         jungleUpperRight = jungleLowerLeft.add( new Vector2d(jungleWidth, jungleHeight) );
+
+        placesForPlantsJungle = new HashMap<>();
+        placesForPlantsOutside = new HashMap<>();
 
         for(int i=0; i<width; i++){
             for(int j=0; j<height; j++){
