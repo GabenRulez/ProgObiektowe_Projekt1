@@ -22,6 +22,12 @@ public class FoldableMap {
     private HashMap<Vector2d, TreeSet<Animal>> animalsMap = new HashMap<>();
     private HashMap<Vector2d, Plant> plantsMap = new HashMap<>();
 
+    private HashMap<Vector2d, Boolean> placesForPlantsJungle;
+    private HashMap<Vector2d, Boolean> placesForPlantsOutside;
+
+    private int plantEnergy = 15;
+
+
     private Vector2d jungleLowerLeft;
     private Vector2d jungleUpperRight;
 
@@ -38,6 +44,19 @@ public class FoldableMap {
 
         jungleLowerLeft = new Vector2d((this.width - jungleWidth) / 2, (this.height - jungleHeight)/2 );
         jungleUpperRight = jungleLowerLeft.add( new Vector2d(jungleWidth, jungleHeight) );
+
+        for(int i=0; i<width; i++){
+            for(int j=0; j<height; j++){
+                Vector2d tempVector = new Vector2d(i,j);
+                if( tempVector.precedes(jungleUpperRight) && tempVector.follows(jungleLowerLeft) ){
+                    placesForPlantsJungle.put( tempVector, Boolean.TRUE );
+                }
+                else{
+                    placesForPlantsOutside.put( tempVector, Boolean.TRUE );
+                }
+
+            }
+        }
     }
 
 
@@ -50,6 +69,9 @@ public class FoldableMap {
             TreeSet<Animal> listOfAnimalsAtPosition = new TreeSet<>(new energyComparator());
             listOfAnimalsAtPosition.add(animal);
             animalsMap.put(animal.position, listOfAnimalsAtPosition);
+
+            placesForPlantsJungle.remove(animal.position);
+            placesForPlantsOutside.remove(animal.position);
         }
         else{
             TreeSet<Animal> listOfAnimalsAtPosition = animalsMap.get(animal.position);
@@ -63,6 +85,14 @@ public class FoldableMap {
 
         if ( listOfAnimalsAtPosition.isEmpty() ){
             animalsMap.remove(animal.position);
+
+            if( animal.position.precedes(jungleUpperRight) && animal.position.follows(jungleLowerLeft) ){
+                placesForPlantsJungle.put(animal.position, Boolean.TRUE);
+            }
+            else{
+                placesForPlantsOutside.put(animal.position, Boolean.TRUE);
+            }
+
         }
     }
 
@@ -74,11 +104,16 @@ public class FoldableMap {
         plantsMap.put( plant.position, plant );
     }
 
+    public void placePlant(Vector2d position, int energy){
+        Plant currentPlant = new Plant(position, energy);
+        placePlant(currentPlant);
+    }
+
     public void removePlant(Plant plant){
         plantsMap.remove( plant.position );
     }
 
-    public void simulateNextDay(int energyPerDay){
+    public void simulateNextDay(int energyPerDay){          // TODO rozdzielić usuwanie, ruszanie zwierząt na oddzielne podmetody -> liczy się czytelność, nie super optymalizacja
 
         for(TreeSet<Animal> currentTreeSet : animalsMap.values()){
             Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
@@ -97,7 +132,7 @@ public class FoldableMap {
 
 
 
-        for(Vector2d positionTreeSet :animalsMap.keySet()){
+        for(Vector2d positionTreeSet : animalsMap.keySet()){
 
             if(plantsAt(positionTreeSet) != null){  // if plant exist at that position
                 int maxEnergy = animalsMap.get(positionTreeSet).first().energy;         // set maxEnergy size
@@ -106,10 +141,13 @@ public class FoldableMap {
                 for(Animal currentAnimal : animalsMap.get(positionTreeSet)){
                     if(currentAnimal.energy != maxEnergy) break;
                     animalsThatEat.add(currentAnimal);
+                    this.removeAnimal(currentAnimal);
                 }
                 for(Animal currentAnimal : animalsThatEat){
                     currentAnimal.updateEnergy(plantsAt(positionTreeSet).energy / animalsThatEat.size());       // give all animals with most energy their part of food
+                    this.placeAnimal(currentAnimal);
                 }
+                this.removePlant(plantsAt(positionTreeSet));
             }
 
             if(animalsMap.get(positionTreeSet).size() >= 2){                // Making babies
@@ -141,8 +179,34 @@ public class FoldableMap {
         }
 
         //// Now create new plants
-        // TODO Lista która jest aktualizowana miejsc na ktorych mozemy postawic roślinkę (tj. miejsc w ktorych nie ma roślinki, ani nie stoi na niej żadne zwierze)
 
+        if( placesForPlantsJungle.isEmpty() == false ){
+            int junglePlantPositionNumber = (int) Math.floor(placesForPlantsJungle.size() * Math.random());
+
+            int i = 0;
+            for( Vector2d currentPosition : placesForPlantsJungle.keySet() ){
+                if(i == junglePlantPositionNumber ){
+                    placePlant(currentPosition, plantEnergy);
+                    placesForPlantsJungle.remove(currentPosition);
+                    break;
+                }
+                i++;
+            }
+        }
+
+        if( placesForPlantsOutside.isEmpty() == false ){
+            int outsidePlantPositionNumber = (int) Math.floor(placesForPlantsOutside.size() * Math.random());
+
+            int i = 0;
+            for( Vector2d currentPosition : placesForPlantsOutside.keySet() ){
+                if(i == outsidePlantPositionNumber ){
+                    placePlant(currentPosition, plantEnergy);
+                    placesForPlantsOutside.remove(currentPosition);
+                    break;
+                }
+                i++;
+            }
+        }
 
 
 
