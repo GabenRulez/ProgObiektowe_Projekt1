@@ -14,7 +14,10 @@ public class genes32 {
     }
 
     public genes32( genes32 copy ){
-        System.arraycopy(copy.array, 0, this.array, 0, 8);
+        this.array = new int[]{0,0,0,0,0,0,0,0};
+        for(int i=0; i<8; i++){
+            this.array[i] = copy.array[i];
+        }
     }
 
     public genes32 getGenesBetween(int start, int end){         // resulting array includes both "start index" and "end index" element
@@ -67,11 +70,9 @@ public class genes32 {
                 index -= this.array[startCol];
                 startCol++;
             }
-            else{
-                return startCol;
-            }
+            else return startCol;
         }
-        return -1;
+        return startCol;
     }
 
     public void repairGenes(){

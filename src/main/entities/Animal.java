@@ -25,12 +25,13 @@ public class Animal {
         this.genes = new genes32();
 
         Vector2d tempPosition = new Vector2d((int)(map.width * Math.random()), (int)(map.height * Math.random()));
-        while( !map.animalsAt(tempPosition).isEmpty() || map.animalsAt(tempPosition) == null ){
+        while( map.animalsAt(tempPosition) != null ){
             tempPosition = new Vector2d((int)(map.width * Math.random()), (int)(map.height * Math.random()));
         }
         this.position = tempPosition;
 
-        this.map.placeAnimal(this);
+        this.map.placeAnimalOnMap(this);
+        this.map.placeAnimalOnList(this);
     }
 
     public Animal(FoldableMap map, int startEnergy, int currentEnergy, Vector2d position, genes32 genes){
@@ -45,9 +46,9 @@ public class Animal {
     }
 
     public void move(){
-        map.removeAnimal(this);
+        map.removeAnimalOnMap(this);
         this.turnRandom();
-        this.position.add( this.orientation.toUnitVector() );
+        this.position = this.position.add( this.orientation.toUnitVector() );
 
             if(this.position.x >= this.map.width) this.position = this.position.subtract(this.map.jumpAcrossWidth);
             else if(this.position.x < 0) this.position = this.position.add(this.map.jumpAcrossWidth);
@@ -55,7 +56,7 @@ public class Animal {
             if(this.position.y >= this.map.height) this.position = this.position.subtract(this.map.jumpAcrossWidth);
             else if(this.position.y < 0) this.position = this.position.add(this.map.jumpAcrossHeight);
 
-        map.placeAnimal(this);
+        map.placeAnimalOnMap(this);
     }
 
     private void turnRandom(){
@@ -88,7 +89,8 @@ public class Animal {
         Animal dumbKid = new Animal(this.map, this.initialEnergy, (this.energy+mateFriend.energy)/4, kidPosition, kidGenes);
         this.energy = 3 * this.energy/4;
         mateFriend.energy = 3 * mateFriend.energy / 4;
-        this.map.placeAnimal(dumbKid);
+        this.map.placeAnimalOnMap(dumbKid);
+        this.map.placeAnimalOnList(dumbKid);
 
         return true;
     }

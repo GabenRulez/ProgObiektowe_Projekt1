@@ -19,8 +19,9 @@ public class FoldableMap {
     public final Vector2d jumpAcrossHeight;
 
     //komparator powinien: ustawiac w kolejności: najsilniejsze (pod względem energii) zwierze, ... , najsłabsze zwierze
-    public HashMap<Vector2d, TreeSet<Animal>> animalsMap = new HashMap<>();
-    public HashMap<Vector2d, Plant> plantsMap = new HashMap<>();
+    public HashMap<Vector2d, TreeSet<Animal>>   animalsMap  = new HashMap<>();
+    public HashMap<Vector2d, Plant>             plantsMap   = new HashMap<>();
+    public ArrayList<Animal>                    animalsList = new ArrayList<>();
 
     public HashMap<Vector2d, Boolean> placesForPlantsJungle;
     public HashMap<Vector2d, Boolean> placesForPlantsOutside;
@@ -68,7 +69,7 @@ public class FoldableMap {
         return animalsMap.get( position );
     }
 
-    public void placeAnimal(Animal animal){
+    public void placeAnimalOnMap(Animal animal){
         if ( animalsMap.get(animal.position) == null ){
             TreeSet<Animal> listOfAnimalsAtPosition = new TreeSet<>(new energyComparator());
             listOfAnimalsAtPosition.add(animal);
@@ -83,11 +84,11 @@ public class FoldableMap {
         }
     }
 
-    public void removeAnimal(Animal animal){
-        TreeSet<Animal> listOfAnimalsAtPosition = animalsMap.get(animal.position);
-        listOfAnimalsAtPosition.remove(animal);
+    public void removeAnimalOnMap(Animal animal){
+        TreeSet<Animal> treesetOfAnimalsAtPosition = animalsMap.get(animal.position);
+        treesetOfAnimalsAtPosition.remove(animal);
 
-        if ( listOfAnimalsAtPosition.isEmpty() ){
+        if ( treesetOfAnimalsAtPosition.isEmpty() ){
             animalsMap.remove(animal.position);
 
             if( animal.position.precedes(jungleUpperRight) && animal.position.follows(jungleLowerLeft) ){
@@ -96,8 +97,15 @@ public class FoldableMap {
             else{
                 placesForPlantsOutside.put(animal.position, Boolean.TRUE);
             }
-
         }
+    }
+
+    public void placeAnimalOnList(Animal animal){
+        this.animalsList.add(animal);
+    }
+
+    public void removeAnimalOnList(Animal animal){
+        this.animalsList.remove(animal);
     }
 
     public Plant plantsAt(Vector2d position){
@@ -126,7 +134,7 @@ public class FoldableMap {
 
                 if(currentAnimal.energy <= 0){      // Usunięcie martwych zwierząt z mapy
                     System.out.println("An animal has died at " + currentAnimal.position);
-                    this.removeAnimal(currentAnimal);
+                    this.removeAnimalOnMap(currentAnimal);
                 }
 
                 currentAnimal.updateEnergy(-energyPerDay);
@@ -145,11 +153,11 @@ public class FoldableMap {
                 for(Animal currentAnimal : animalsMap.get(positionTreeSet)){
                     if(currentAnimal.energy != maxEnergy) break;
                     animalsThatEat.add(currentAnimal);
-                    this.removeAnimal(currentAnimal);
+                    this.removeAnimalOnMap(currentAnimal);
                 }
                 for(Animal currentAnimal : animalsThatEat){
                     currentAnimal.updateEnergy(plantsAt(positionTreeSet).energy / animalsThatEat.size());       // give all animals with most energy their part of food
-                    this.placeAnimal(currentAnimal);
+                    this.placeAnimalOnMap(currentAnimal);
                 }
                 this.removePlant(plantsAt(positionTreeSet));
             }

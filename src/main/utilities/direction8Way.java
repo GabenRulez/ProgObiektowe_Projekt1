@@ -8,10 +8,6 @@ public class direction8Way {
     }
     public direction8Way(int value){ this.value = value; }
 
-    public int get() {          // returning a copy, as to disable any sort of changes
-        return this.value;
-    }
-
     public String toString() {
         return String.valueOf(this.value);
     }

@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 public class SimpleSimulation {
 
-    private FoldableMap map;
+    public FoldableMap map;
     private int moveEnergy;
     private int plantEnergy;
 
@@ -24,9 +24,12 @@ public class SimpleSimulation {
         new Animal(this.map, startEnergy);
         new Animal(this.map, startEnergy);
         new Animal(this.map, startEnergy);
+
+        System.out.println("Simulation environment created.");
     }
 
     public void newDay(){
+        System.out.println("New day starts...");
         this.eraseTheDead();
 
         this.moveAllAnimals();
@@ -35,37 +38,37 @@ public class SimpleSimulation {
 
         this.newPlantJungle();
         this.newPlantOutside();
+        System.out.println("A day comes to an end...");
     }
 
     private void eraseTheDead(){
-        for(TreeSet<Animal> currentTreeSet : this.map.animalsMap.values()){
-            Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
-            while(iteratorPoTreeSet.hasNext()){
-                Animal currentAnimal = iteratorPoTreeSet.next();
+        ArrayList<Animal> toDelete = new ArrayList<>();
 
-                if(currentAnimal.energy <= 0){      // Usunięcie martwych zwierząt z mapy
-                    System.out.println("An animal has died at " + currentAnimal.position);
-                    this.map.removeAnimal(currentAnimal);
-                }
+        for(Animal currentAnimal : this.map.animalsList ){
+            if( currentAnimal.energy <= 0 ){
+                System.out.println("An animal has died at " + currentAnimal.position);
+                toDelete.add(currentAnimal);
             }
+        }
+        for( Animal currentAnimal : toDelete ){
+            System.out.println("animal list size: " + this.map.animalsList.size());
+            System.out.println("animal map size: " + this.map.animalsMap.size());
+            this.map.removeAnimalOnMap(currentAnimal);
+            this.map.removeAnimalOnList(currentAnimal);
         }
     }
 
-
     private void moveAllAnimals(){
-        for(TreeSet<Animal> currentTreeSet : this.map.animalsMap.values()){
-            Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
-            while(iteratorPoTreeSet.hasNext()){
-                Animal currentAnimal = iteratorPoTreeSet.next();
-
-                currentAnimal.updateEnergy(-moveEnergy);        // Tutaj nie trzeba aktualizować struktury drzewa, bo jest zachowana (jeśli z każdego węzła usuwamy stałą liczbę to stosunki jednego do drugiego się nie zmieniają)
-                currentAnimal.move();               // Zmiana kierunku zaimplementowana w poruszaniu się
-            }
+        for(Animal currentAnimal : this.map.animalsList){
+            currentAnimal.updateEnergy(-moveEnergy);        // Tutaj nie trzeba aktualizować struktury drzewa, bo jest zachowana (jeśli z każdego węzła usuwamy stałą liczbę to stosunki jednego do drugiego się nie zmieniają)
+            currentAnimal.move();               // Zmiana kierunku zaimplementowana w poruszaniu się
         }
     }
 
     private void feedAllAnimals() {
-        for (Vector2d positionTreeSet : this.map.animalsMap.keySet()) {
+        ArrayList<Vector2d> positionsOfTreeSets = new ArrayList<>(this.map.animalsMap.keySet());
+
+        for (Vector2d positionTreeSet : positionsOfTreeSets) {         // TODO spróbuj skopiować pozycje do oddzielnej listy, może tym sposobem pozbędziesz się concurrentModificationError
             if (this.map.plantsAt(positionTreeSet) != null) {  // if plant exist at that position
                 int maxEnergy = this.map.animalsMap.get(positionTreeSet).first().energy;         // set maxEnergy size
 
@@ -73,13 +76,12 @@ public class SimpleSimulation {
                 for (Animal currentAnimal : this.map.animalsMap.get(positionTreeSet)) {
                     if (currentAnimal.energy != maxEnergy) break;
                     animalsThatEat.add(currentAnimal);
-
-                    this.map.removeAnimal(currentAnimal);
                 }
                 for (Animal currentAnimal : animalsThatEat) {
                     currentAnimal.updateEnergy(this.map.plantsAt(positionTreeSet).energy / animalsThatEat.size());       // give all animals with most energy their part of food
 
-                    this.map.placeAnimal(currentAnimal);
+                    this.map.removeAnimalOnMap(currentAnimal);
+                    this.map.placeAnimalOnMap(currentAnimal);
                 }
                 this.map.removePlant(this.map.plantsAt(positionTreeSet));
             }
@@ -87,7 +89,11 @@ public class SimpleSimulation {
     }
 
     private void makeBabies(){
-        for(Vector2d positionTreeSet : this.map.animalsMap.keySet()){
+        //ArrayList<Vector2d> positions = (ArrayList<Vector2d>) this.map.animalsMap.keySet();
+        ArrayList<Vector2d> positions = new ArrayList<>(this.map.animalsMap.keySet());
+
+        //for(Vector2d positionTreeSet : this.map.animalsMap.keySet()){       // TODO skopiuj set pozycji do jakiejś oddzielnej listy - dzięki temu pozbędziesz się concurrentModificationException
+        for( Vector2d positionTreeSet : positions ){
 
             if( this.map.animalsMap.get(positionTreeSet).size() >= 2 ){                // Making babies
                 TreeSet<Animal> currentTreeSet = this.map.animalsMap.get(positionTreeSet);
