@@ -7,7 +7,6 @@ import utilities.energyComparator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.TreeSet;
 
 public class FoldableMap {
@@ -15,30 +14,20 @@ public class FoldableMap {
     public final int width;
     public final int height;
 
-    public final Vector2d jumpAcrossWidth;
-    public final Vector2d jumpAcrossHeight;
-
-    //komparator powinien: ustawiac w kolejności: najsilniejsze (pod względem energii) zwierze, ... , najsłabsze zwierze
+    //komparator ustawia w kolejności: najsilniejsze (pod względem energii) zwierz, ... , najsłabszy zwierz
     public HashMap<Vector2d, TreeSet<Animal>>   animalsMap  = new HashMap<>();
-    public HashMap<Vector2d, Plant>             plantsMap   = new HashMap<>();
+    private HashMap<Vector2d, Plant>             plantsMap   = new HashMap<>();
     public ArrayList<Animal>                    animalsList = new ArrayList<>();
 
     public HashMap<Vector2d, Boolean> placesForPlantsJungle;
     public HashMap<Vector2d, Boolean> placesForPlantsOutside;
 
-    private int plantEnergy;
-
-
     private Vector2d jungleLowerLeft;
     private Vector2d jungleUpperRight;
 
-    public FoldableMap(int width, int height, int plantEnergy, float jungleRatio){
+    public FoldableMap(int width, int height, float jungleRatio){
         this.width = width;
         this.height = height;
-        this.plantEnergy = plantEnergy;
-
-        this.jumpAcrossWidth = new Vector2d(width, 0);
-        this.jumpAcrossHeight = new Vector2d(0, height);
 
         double jungleRatio1D = Math.sqrt(jungleRatio);
         int jungleWidth =   (int) Math.floor( this.width    * jungleRatio1D );
@@ -59,7 +48,6 @@ public class FoldableMap {
                 else{
                     placesForPlantsOutside.put( tempVector, Boolean.TRUE );
                 }
-
             }
         }
     }
@@ -112,7 +100,7 @@ public class FoldableMap {
         return plantsMap.get( position );
     }
 
-    public void placePlant(Plant plant){
+    private void placePlant(Plant plant){
         plantsMap.put( plant.position, plant );
     }
 

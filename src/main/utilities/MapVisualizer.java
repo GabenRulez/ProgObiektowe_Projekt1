@@ -5,9 +5,9 @@ import maps.FoldableMap;
 import simulations.SimpleSimulation;
 
 public class MapVisualizer {
-    SimpleSimulation simulation;
-    FoldableMap map;
-    int lineWidth;
+    private SimpleSimulation simulation;
+    private FoldableMap map;
+    private int lineWidth;
     private String lineOfHash = "";
 
     public MapVisualizer(SimpleSimulation simulation){
@@ -26,12 +26,11 @@ public class MapVisualizer {
         this.lineOfHash();
         this.writeAllAnimalsOut();
         this.lineOfHash();
-
     }
 
-    public void lineOfHash(){ System.out.println("#" + lineOfHash + "#"); }
+    private void lineOfHash(){ System.out.println("#" + lineOfHash + "#"); }
 
-    public void writeCenter(String text){
+    private void writeCenter(String text){
         int spacesInFront = ( this.lineWidth - text.length() )/2;
         String temp = "";
         for(int i=0; i<spacesInFront; i++) temp += " ";
@@ -44,13 +43,13 @@ public class MapVisualizer {
         }
     }
 
-    public void drawCorrectMap(){
+    private void drawCorrectMap(){
         for(int i = this.map.height-1; i>=0; i--){
             this.drawMapRow(i);
         }
     }
 
-    public void drawMapRow(int rowNumber){
+    private void drawMapRow(int rowNumber){
         String tempString = "";
 
         for(int i=0; i<this.lineWidth; i++){
@@ -66,15 +65,12 @@ public class MapVisualizer {
         System.out.println("#" + tempString + "#");
     }
 
-    public void writeAllAnimalsOut(){
+    private void writeAllAnimalsOut(){
         boolean flag = false;
         for(Animal animal : this.map.animalsList){
             this.writeCenter("Animal at " + animal.position.toString() + ", rot: " + animal.orientation + ", energy: " + animal.energy);
             flag = true;
         }
-        if (flag == false) this.writeCenter("No animals are alive.");
+        if ( !flag ) this.writeCenter("No animals are alive.");
     }
-
-
-
 }

@@ -8,11 +8,11 @@ import utilities.genes32;
 public class Animal {
 
     public int energy;
-    public final int initialEnergy;
+    private final int initialEnergy;
 
     public direction8Way orientation;
     public Vector2d position;
-    public genes32 genes;
+    private genes32 genes;
 
     private FoldableMap map;
 
@@ -34,7 +34,7 @@ public class Animal {
         this.map.placeAnimalOnList(this);
     }
 
-    public Animal(FoldableMap map, int startEnergy, int currentEnergy, Vector2d position, genes32 genes){
+    private Animal(FoldableMap map, int startEnergy, int currentEnergy, Vector2d position, genes32 genes){
         this.map = map;
         this.orientation = new direction8Way();
         this.energy = currentEnergy;
@@ -53,17 +53,8 @@ public class Animal {
     public void move(){
         map.removeAnimalOnMap(this);
         this.turnRandom();
-        this.position = this.position.add( this.orientation.toUnitVector() );
-        this.position = new Vector2d(((this.position.x % this.map.width) + this.map.width)%this.map.width, ((this.position.y % this.map.height)+this.map.height)%this.map.height);      // modulo nie zwracające ujemnych liczb
-
-/*
-            if(this.position.x >= this.map.width) this.position = this.position.subtract(this.map.jumpAcrossWidth);
-            else if(this.position.x < 0) this.position = this.position.add(this.map.jumpAcrossWidth);
-
-            if(this.position.y >= this.map.height) this.position = this.position.subtract(this.map.jumpAcrossWidth);
-            else if(this.position.y < 0) this.position = this.position.add(this.map.jumpAcrossHeight);
-
- */
+        Vector2d positionUnchecked = this.position.add( this.orientation.toUnitVector() );
+        this.position = new Vector2d(((positionUnchecked.x % this.map.width) + this.map.width)%this.map.width, ((positionUnchecked.y % this.map.height)+this.map.height)%this.map.height);      // modulo nie zwracające ujemnych liczb
 
         map.placeAnimalOnMap(this);
     }
@@ -113,8 +104,4 @@ public class Animal {
     public void updateEnergy(int difference){
         this.energy += difference;
     }
-
-
-
 }
-

@@ -17,7 +17,7 @@ public class SimpleSimulation {
     public int currentDay;
 
     public SimpleSimulation(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio, int numberOfSpawnedAnimals){
-        this.map = new FoldableMap(width, height, plantEnergy, jungleRatio);
+        this.map = new FoldableMap(width, height, jungleRatio);
         this.moveEnergy = moveEnergy;
         this.plantEnergy = plantEnergy;
 
@@ -63,14 +63,14 @@ public class SimpleSimulation {
     private void moveAllAnimals(){
         for(Animal currentAnimal : this.map.animalsList){
             currentAnimal.updateEnergy(-moveEnergy);        // Tutaj nie trzeba aktualizować struktury drzewa, bo jest zachowana (jeśli z każdego węzła usuwamy stałą liczbę to stosunki jednego do drugiego się nie zmieniają)
-            currentAnimal.move();               // Zmiana kierunku zaimplementowana w poruszaniu się
+            currentAnimal.move();                           // Zmiana kierunku zaimplementowana w poruszaniu się
         }
     }
 
     private void feedAllAnimals() {
         ArrayList<Vector2d> positionsOfTreeSets = new ArrayList<>(this.map.animalsMap.keySet());
 
-        for (Vector2d positionTreeSet : positionsOfTreeSets) {         // TODO spróbuj skopiować pozycje do oddzielnej listy, może tym sposobem pozbędziesz się concurrentModificationError
+        for (Vector2d positionTreeSet : positionsOfTreeSets) {
             if (this.map.plantsAt(positionTreeSet) != null) {  // if plant exist at that position
                 int maxEnergy = this.map.animalsMap.get(positionTreeSet).first().energy;         // set maxEnergy size
 
@@ -127,7 +127,7 @@ public class SimpleSimulation {
     }
 
     private void newPlantJungle(){
-        if( this.map.placesForPlantsJungle.isEmpty() == false ){
+        if( !this.map.placesForPlantsJungle.isEmpty() ){
             int junglePlantPositionNumber = (int) Math.floor(this.map.placesForPlantsJungle.size() * Math.random());
 
             int i = 0;
@@ -143,7 +143,7 @@ public class SimpleSimulation {
     }
 
     private void newPlantOutside(){
-        if( this.map.placesForPlantsOutside.isEmpty() == false ){
+        if( !this.map.placesForPlantsOutside.isEmpty() ){
             int outsidePlantPositionNumber = (int) Math.floor(this.map.placesForPlantsOutside.size() * Math.random());
 
             int i = 0;
@@ -157,7 +157,4 @@ public class SimpleSimulation {
             }
         }
     }
-
-
-
 }

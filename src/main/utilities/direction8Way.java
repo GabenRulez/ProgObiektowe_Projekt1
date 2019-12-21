@@ -6,7 +6,6 @@ public class direction8Way {
     public direction8Way(){
         this.value = (int) Math.floor(8 * Math.random());
     }
-    public direction8Way(int value){ this.value = value; }
 
     public String toString() {
         return String.valueOf(this.value);
@@ -31,7 +30,7 @@ public class direction8Way {
         }
     }
 
-    public char toArrow(){
+    char toArrow(){
         switch(this.value){
             case 0: return '↑';
             case 1: return '↗';

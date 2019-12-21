@@ -3,7 +3,7 @@ package utilities;
 import java.util.ArrayList;
 
 public class genes32 {
-    public int[] array;
+    private int[] array;
 
     public genes32(){
         this.array = new int[]{1,1,1,1,1,1,1,1};
@@ -13,7 +13,7 @@ public class genes32 {
         }
     }
 
-    public genes32( genes32 copy ){
+    private genes32(genes32 copy){
         this.array = new int[]{0,0,0,0,0,0,0,0};
         for(int i=0; i<8; i++){
             this.array[i] = copy.array[i];
@@ -103,19 +103,5 @@ public class genes32 {
             this.array[valueToExchange] -= 1;
         }
         // All indexes should have value of at least 1
-    }
-
-
-
-
-
-    public int[] toArray(){
-        int[] result = new int[32];
-        int arrayIterator = 0;
-        for(int i=0; i<32; i++){
-            while( array[arrayIterator] == 0 ) arrayIterator++;
-            result[i] = arrayIterator;
-        }
-        return result;
     }
 }

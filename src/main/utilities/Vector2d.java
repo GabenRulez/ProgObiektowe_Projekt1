@@ -21,32 +21,8 @@ public class Vector2d {
         return (this.x >= other.x  &&  this.y >= other.y);
     }
 
-    public Vector2d upperRight(Vector2d other){
-        int temp_x = this.x;
-        int temp_y = this.y;
-
-        if (other.x > temp_x) temp_x = other.x;
-        if (other.y > temp_y) temp_y = other.y;
-
-        return new Vector2d(temp_x, temp_y);
-    }
-
-    public Vector2d lowerLeft(Vector2d other){
-        int temp_x = this.x;
-        int temp_y = this.y;
-
-        if (other.x < temp_x) temp_x = other.x;
-        if (other.y < temp_y) temp_y = other.y;
-
-        return new Vector2d(temp_x, temp_y);
-    }
-
     public Vector2d add(Vector2d other){
         return new Vector2d(this.x + other.x, this.y + other.y);
-    }
-
-    public Vector2d subtract(Vector2d other){
-        return new Vector2d(this.x - other.x, this.y - other.y);
     }
 
     public boolean equals(Object other){
@@ -56,10 +32,6 @@ public class Vector2d {
         Vector2d otherVector = (Vector2d) other;
 
         return ( this.x == otherVector.x && this.y == otherVector.y );
-    }
-
-    public Vector2d opposite(){
-        return new Vector2d(this.x*(-1), this.y*(-1));
     }
 
     @Override

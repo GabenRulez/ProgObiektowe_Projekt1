@@ -4,7 +4,6 @@ import org.json.simple.parser.ParseException;
 import simulations.SimpleSimulation;
 import utilities.MapVisualizer;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -34,9 +33,9 @@ public class World {
             MapVisualizer visualizer = new MapVisualizer(symulacja);
 
             for(int i=0; i<maxIteration; i++){
+                Thread.sleep(timeout);
                 symulacja.newDay();
                 visualizer.drawMap();
-                Thread.sleep(timeout);
             }
 
         }
