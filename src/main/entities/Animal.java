@@ -54,12 +54,16 @@ public class Animal {
         map.removeAnimalOnMap(this);
         this.turnRandom();
         this.position = this.position.add( this.orientation.toUnitVector() );
+        this.position = new Vector2d(((this.position.x % this.map.width) + this.map.width)%this.map.width, ((this.position.y % this.map.height)+this.map.height)%this.map.height);      // modulo nie zwracające ujemnych liczb
 
+/*
             if(this.position.x >= this.map.width) this.position = this.position.subtract(this.map.jumpAcrossWidth);
             else if(this.position.x < 0) this.position = this.position.add(this.map.jumpAcrossWidth);
 
             if(this.position.y >= this.map.height) this.position = this.position.subtract(this.map.jumpAcrossWidth);
             else if(this.position.y < 0) this.position = this.position.add(this.map.jumpAcrossHeight);
+
+ */
 
         map.placeAnimalOnMap(this);
     }

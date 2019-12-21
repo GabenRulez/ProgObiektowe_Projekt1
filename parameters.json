@@ -1,9 +1,12 @@
 {
-  "width": 10,
+  "width": 40,
   "height": 10,
-  "startEnergy": 15,
+  "startEnergy": 25,
   "moveEnergy": 1,
   "plantEnergy": 15,
-  "jungleRatio": 0.36
+  "jungleRatio": 0.36,
+  "spawnAnimals": 10,
+  "iterations": 30,
+  "timeoutBetweenFrames": 2000
 }
 

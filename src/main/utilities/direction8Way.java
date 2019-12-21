@@ -30,4 +30,18 @@ public class direction8Way {
             default: throw new IllegalArgumentException(this.value + " is not a proper direction. Error in 'direction.java'");
         }
     }
+
+    public char toArrow(){
+        switch(this.value){
+            case 0: return '↑';
+            case 1: return '↗';
+            case 2: return '→';
+            case 3: return '↘';
+            case 4: return '↓';
+            case 5: return '↙';
+            case 6: return '←';
+            case 7: return '↖';
+            default: return '*';
+        }
+    }
 }

@@ -16,16 +16,14 @@ public class SimpleSimulation {
 
     public int currentDay;
 
-    public SimpleSimulation(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio){
+    public SimpleSimulation(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio, int numberOfSpawnedAnimals){
         this.map = new FoldableMap(width, height, plantEnergy, jungleRatio);
         this.moveEnergy = moveEnergy;
         this.plantEnergy = plantEnergy;
 
-        new Animal(this.map, startEnergy);
-        new Animal(this.map, startEnergy);
-        new Animal(this.map, startEnergy);
-        new Animal(this.map, startEnergy);
-        new Animal(this.map, startEnergy);
+        for(int i=0; i<numberOfSpawnedAnimals; i++){
+            new Animal(this.map, startEnergy);
+        }
 
         System.out.println("Simulation environment created.");
     }
@@ -33,8 +31,7 @@ public class SimpleSimulation {
     public void newDay(){
         this.currentDay++;
         System.out.println();
-        System.out.println("Alive : " + this.map.animalsList.size() + " , occupied spaces: " + this.map.animalsMap.size());
-        System.out.println("Day " + this.currentDay + " started.");
+        System.out.println("Day " + this.currentDay + " started.          Alive : " + this.map.animalsList.size() + " , occupied spaces: " + this.map.animalsMap.size());
         this.eraseTheDead();
 
         this.moveAllAnimals();
@@ -43,8 +40,7 @@ public class SimpleSimulation {
 
         this.newPlantJungle();
         this.newPlantOutside();
-        System.out.println("Day " + this.currentDay + " came to an end.");
-        System.out.println("Alive : " + this.map.animalsList.size() + " , occupied spaces: " + this.map.animalsMap.size());
+        System.out.println("Day " + this.currentDay + " came to an end.   Alive : " + this.map.animalsList.size() + " , occupied spaces: " + this.map.animalsMap.size());
         System.out.println();
     }
 

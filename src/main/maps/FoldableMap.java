@@ -88,7 +88,7 @@ public class FoldableMap {
         TreeSet<Animal> treesetOfAnimalsAtPosition = animalsMap.get(animal.position);
         treesetOfAnimalsAtPosition.remove(animal);
 
-        if ( treesetOfAnimalsAtPosition.isEmpty() ){
+        if (treesetOfAnimalsAtPosition.isEmpty()){
             animalsMap.remove(animal.position);
 
             if( animal.position.precedes(jungleUpperRight) && animal.position.follows(jungleLowerLeft) ){
@@ -123,105 +123,5 @@ public class FoldableMap {
 
     public void removePlant(Plant plant){
         plantsMap.remove( plant.position );
-    }
-
-    public void simulateNextDay(int energyPerDay){          // TODO rozdzielić usuwanie, ruszanie zwierząt na oddzielne podmetody -> liczy się czytelność, nie super optymalizacja
-
-        for(TreeSet<Animal> currentTreeSet : animalsMap.values()){
-            Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
-            while(iteratorPoTreeSet.hasNext()){
-                Animal currentAnimal = iteratorPoTreeSet.next();
-
-                if(currentAnimal.energy <= 0){      // Usunięcie martwych zwierząt z mapy
-                    System.out.println("An animal has died at " + currentAnimal.position);
-                    this.removeAnimalOnMap(currentAnimal);
-                }
-
-                currentAnimal.updateEnergy(-energyPerDay);
-                currentAnimal.move();               // Zmiana kierunku zaimplementowana w poruszaniu się
-            }
-        }
-
-
-
-        for(Vector2d positionTreeSet : animalsMap.keySet()){
-
-            if(plantsAt(positionTreeSet) != null){  // if plant exist at that position
-                int maxEnergy = animalsMap.get(positionTreeSet).first().energy;         // set maxEnergy size
-
-                ArrayList<Animal> animalsThatEat = new ArrayList<>();                   // create a List of maxEnergy Animals (to get amount of them + easier to iterate)
-                for(Animal currentAnimal : animalsMap.get(positionTreeSet)){
-                    if(currentAnimal.energy != maxEnergy) break;
-                    animalsThatEat.add(currentAnimal);
-                    this.removeAnimalOnMap(currentAnimal);
-                }
-                for(Animal currentAnimal : animalsThatEat){
-                    currentAnimal.updateEnergy(plantsAt(positionTreeSet).energy / animalsThatEat.size());       // give all animals with most energy their part of food
-                    this.placeAnimalOnMap(currentAnimal);
-                }
-                this.removePlant(plantsAt(positionTreeSet));
-            }
-
-            if(animalsMap.get(positionTreeSet).size() >= 2){                // Making babies
-                TreeSet<Animal> currentTreeSet = animalsMap.get(positionTreeSet);
-
-                Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
-                Animal firstAnimal = iteratorPoTreeSet.next();
-                Animal secondAnimal = iteratorPoTreeSet.next();
-
-                if( firstAnimal.energy > secondAnimal.energy ){
-                    firstAnimal.makeBaby(secondAnimal);
-                }
-                else{
-                    int maxEnergy = firstAnimal.energy;
-
-                    ArrayList<Animal> animalsThatMakeBabies = new ArrayList<>();
-                    for(Animal currentAnimal : currentTreeSet){
-                        if( currentAnimal.energy < maxEnergy ) break;
-                        animalsThatMakeBabies.add(currentAnimal);
-                    }
-
-                    int randomNumber1 = (int) Math.floor(animalsThatMakeBabies.size() * Math.random());
-                    int randomNumber2 = (int) Math.floor(animalsThatMakeBabies.size() * Math.random());
-                    while( randomNumber1 == randomNumber2 ) randomNumber2 = (int) Math.floor(animalsThatMakeBabies.size() * Math.random());
-
-                    animalsThatMakeBabies.get(randomNumber1).makeBaby( animalsThatMakeBabies.get(randomNumber2) );
-                }
-            }
-        }
-
-        //// Now create new plants
-
-        if( placesForPlantsJungle.isEmpty() == false ){
-            int junglePlantPositionNumber = (int) Math.floor(placesForPlantsJungle.size() * Math.random());
-
-            int i = 0;
-            for( Vector2d currentPosition : placesForPlantsJungle.keySet() ){
-                if(i == junglePlantPositionNumber ){
-                    placePlant(currentPosition, plantEnergy);
-                    placesForPlantsJungle.remove(currentPosition);
-                    break;
-                }
-                i++;
-            }
-        }
-
-        if( placesForPlantsOutside.isEmpty() == false ){
-            int outsidePlantPositionNumber = (int) Math.floor(placesForPlantsOutside.size() * Math.random());
-
-            int i = 0;
-            for( Vector2d currentPosition : placesForPlantsOutside.keySet() ){
-                if(i == outsidePlantPositionNumber ){
-                    placePlant(currentPosition, plantEnergy);
-                    placesForPlantsOutside.remove(currentPosition);
-                    break;
-                }
-                i++;
-            }
-        }
-
-
-
-
     }
 }

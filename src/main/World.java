@@ -2,6 +2,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import simulations.SimpleSimulation;
+import utilities.MapVisualizer;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -12,7 +13,7 @@ public class World {
     public static void main(String[] args){
 
         System.out.println("Starting the program...");
-        System.out.println("...");
+        System.out.println("Animals are displayed as arrows, plants are displayed as '@'.");
 
         JSONParser jsonParser = new JSONParser();
         try {
@@ -24,51 +25,25 @@ public class World {
             int moveEnergy =    (int)(long)     jsonObject.get("moveEnergy");
             int plantEnergy =   (int)(long)     jsonObject.get("plantEnergy");
             float jungleRatio = (float)(double) jsonObject.get("jungleRatio");
+            int spawnAnimals =  (int)(long)     jsonObject.get("spawnAnimals");
+            int maxIteration =  (int)(long)     jsonObject.get("iterations");
+            int timeout =       (int)(long)     jsonObject.get("timeoutBetweenFrames");
 
-            SimpleSimulation symulacja = new SimpleSimulation( width, height, startEnergy, moveEnergy, plantEnergy, jungleRatio);
+            SimpleSimulation symulacja = new SimpleSimulation( width, height, startEnergy, moveEnergy, plantEnergy, jungleRatio, spawnAnimals);
 
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
-            symulacja.newDay();
+            MapVisualizer visualizer = new MapVisualizer(symulacja);
 
-
-
+            for(int i=0; i<maxIteration; i++){
+                symulacja.newDay();
+                visualizer.drawMap();
+                Thread.sleep(timeout);
+            }
 
         }
         catch(IOException | ParseException exception){
             System.err.println("Plik json nie istnieje!");
+        } catch (InterruptedException e) {
+            System.err.println("Funkcja Sleep zgłosiła błąd.");
         }
     }
 }
