@@ -35,10 +35,15 @@ public class Animal {
     }
 
     public Animal(FoldableMap map, int startEnergy, int currentEnergy, Vector2d position, genes32 genes){
-        this(map, startEnergy);
+        this.map = map;
+        this.orientation = new direction8Way();
         this.energy = currentEnergy;
+        this.initialEnergy = startEnergy;
         this.position = position;
         this.genes = genes;
+
+        this.map.placeAnimalOnMap(this);
+        this.map.placeAnimalOnList(this);
     }
 
     public String toString(){
@@ -78,7 +83,7 @@ public class Animal {
         ///////////////////////////////////////////
 
         // create new genes for a kid//////////////
-        int secondPart = 1 + (int) Math.floor( 30*Math.random() );         // should be [1,2,...,29,30] as to make thirdPart at least of length 1       // secondPart i thirdPart są indeksem pierwszego miejsca w nowej części
+        int secondPart = 1 + (int) Math.floor( 30*Math.random() );        // secondPart i thirdPart są indeksem pierwszego miejsca w nowej części
         int thirdPart = secondPart + 1 + (int) Math.floor( (32-secondPart)*Math.random() );
 
         genes32 kidGenes = new genes32();
@@ -86,11 +91,17 @@ public class Animal {
         kidGenes.repairGenes();
         ///////////////////////////////////////////
 
-        Animal dumbKid = new Animal(this.map, this.initialEnergy, (this.energy+mateFriend.energy)/4, kidPosition, kidGenes);
+        Animal dumbKid = new Animal(this.map, this.initialEnergy, (this.energy+mateFriend.energy) /4, kidPosition, kidGenes);
         this.energy = 3 * this.energy/4;
         mateFriend.energy = 3 * mateFriend.energy / 4;
-        this.map.placeAnimalOnMap(dumbKid);
-        this.map.placeAnimalOnList(dumbKid);
+
+        this.map.removeAnimalOnMap(this);       // Update the trees that parents are in
+        this.map.placeAnimalOnMap(this);
+        this.map.removeAnimalOnMap(mateFriend);
+        this.map.placeAnimalOnMap(mateFriend);
+
+
+        System.out.println("New baby animal has been created at " + dumbKid.position + ". His parents are both on " + this.position + ".");
 
         return true;
     }

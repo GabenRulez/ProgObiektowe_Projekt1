@@ -14,6 +14,8 @@ public class SimpleSimulation {
     private int moveEnergy;
     private int plantEnergy;
 
+    public int currentDay;
+
     public SimpleSimulation(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio){
         this.map = new FoldableMap(width, height, plantEnergy, jungleRatio);
         this.moveEnergy = moveEnergy;
@@ -29,7 +31,10 @@ public class SimpleSimulation {
     }
 
     public void newDay(){
-        System.out.println("New day starts...");
+        this.currentDay++;
+        System.out.println();
+        System.out.println("Alive : " + this.map.animalsList.size() + " , occupied spaces: " + this.map.animalsMap.size());
+        System.out.println("Day " + this.currentDay + " started.");
         this.eraseTheDead();
 
         this.moveAllAnimals();
@@ -38,7 +43,9 @@ public class SimpleSimulation {
 
         this.newPlantJungle();
         this.newPlantOutside();
-        System.out.println("A day comes to an end...");
+        System.out.println("Day " + this.currentDay + " came to an end.");
+        System.out.println("Alive : " + this.map.animalsList.size() + " , occupied spaces: " + this.map.animalsMap.size());
+        System.out.println();
     }
 
     private void eraseTheDead(){
@@ -46,13 +53,12 @@ public class SimpleSimulation {
 
         for(Animal currentAnimal : this.map.animalsList ){
             if( currentAnimal.energy <= 0 ){
-                System.out.println("An animal has died at " + currentAnimal.position);
                 toDelete.add(currentAnimal);
             }
         }
         for( Animal currentAnimal : toDelete ){
-            System.out.println("animal list size: " + this.map.animalsList.size());
-            System.out.println("animal map size: " + this.map.animalsMap.size());
+            System.out.println("An animal has died at " + currentAnimal.position + ".");
+
             this.map.removeAnimalOnMap(currentAnimal);
             this.map.removeAnimalOnList(currentAnimal);
         }
@@ -82,6 +88,8 @@ public class SimpleSimulation {
 
                     this.map.removeAnimalOnMap(currentAnimal);
                     this.map.placeAnimalOnMap(currentAnimal);
+
+                    System.out.println("An animal ate some plant. It gave him " + this.map.plantsAt(positionTreeSet).energy / animalsThatEat.size() + " energy. Now he has: " + currentAnimal.energy + ".");
                 }
                 this.map.removePlant(this.map.plantsAt(positionTreeSet));
             }
@@ -89,13 +97,11 @@ public class SimpleSimulation {
     }
 
     private void makeBabies(){
-        //ArrayList<Vector2d> positions = (ArrayList<Vector2d>) this.map.animalsMap.keySet();
         ArrayList<Vector2d> positions = new ArrayList<>(this.map.animalsMap.keySet());
 
-        //for(Vector2d positionTreeSet : this.map.animalsMap.keySet()){       // TODO skopiuj set pozycji do jakiejś oddzielnej listy - dzięki temu pozbędziesz się concurrentModificationException
         for( Vector2d positionTreeSet : positions ){
 
-            if( this.map.animalsMap.get(positionTreeSet).size() >= 2 ){                // Making babies
+            if( this.map.animalsMap.get(positionTreeSet).size() >= 2 ){
                 TreeSet<Animal> currentTreeSet = this.map.animalsMap.get(positionTreeSet);
 
                 Iterator<Animal> iteratorPoTreeSet = currentTreeSet.iterator();
